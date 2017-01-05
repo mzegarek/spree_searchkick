@@ -23,6 +23,25 @@ $(function () {
       highlight: true
     }, {
     name: 'products',
-    source: products
+    source: products,
+    display: function(obj) {
+      return obj.value;
+    },
+    templates: {
+      suggestion: function(obj) {
+        var result = '<div>' + obj.value;
+        if (typeof obj.brand !== 'undefined') {
+          result += ' <small>by ' + obj.brand + '</small>';
+        }
+        return result + '</div>';
+      }
+    }
   });
+  $('#keywords').on('typeahead:open', function() {
+    $('.search-container.collapse').addClass('tt-open');
+  });
+  $('#keywords').on('typeahead:close', function() {
+    $('.search-container.collapse').removeClass('tt-open');
+  });
+
 });

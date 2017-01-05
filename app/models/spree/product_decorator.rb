@@ -1,5 +1,5 @@
 Spree::Product.class_eval do
-  searchkick autocomplete: [:name]
+  searchkick word_start: [:name, :brand]
 
   def search_data
     json = {
@@ -13,8 +13,11 @@ Spree::Product.class_eval do
       currency: currency,
       conversions: orders.complete.count,
       taxon_ids: taxon_and_ancestors.map(&:id),
-      taxon_names: taxon_and_ancestors.map(&:name)
+      taxon_names: taxon_and_ancestors.map(&:name),
+      orders_count: orders.where('completed_at > ?', 3.months.ago).count
     }
+
+    json.merge!(brand: brand.name) if brand
 
     Spree::Property.all.each do |prop|
       json.merge!(Hash[prop.name.downcase, property(prop.name)])
@@ -35,14 +38,21 @@ Spree::Product.class_eval do
     if keywords
       Spree::Product.search(
         keywords,
-        autocomplete: true,
-        limit: 10, where: search_where
-      ).map(&:name).map(&:strip).uniq
+        {
+          fields: ["name^5", "brand"],
+          match: :word_start,
+          limit: 10,
+          load: false,
+          misspellings: { below: 5 },
+          where: search_where
+        }
+      ).map { |p| { value: p.name, brand: p.brand } }.uniq
     else
       Spree::Product.search(
         '*',
-        where: search_where
-      ).map(&:name).map(&:strip)
+        fields: ["name^5", "brand"],
+        where: search_where,
+      ).map { |p| { value: p.name, brand: p.brand } }
     end
   end
 
