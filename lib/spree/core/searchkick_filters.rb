@@ -25,11 +25,11 @@ module Spree
           filter["buckets"].each do |bucket|
             label =
               if bucket["from"] && bucket["to"]
-                "$#{bucket['from']} - $#{bucket['to']}"
+                "$#{bucket['from'].to_i} - $#{bucket['to'].to_i}"
               elsif bucket["from"]
-                "$#{bucket['from']} and up"
+                "$#{bucket['from'].to_i} and up"
               elsif bucket["to"]
-                "Under $#{bucket['to']}"
+                "Under $#{bucket['to'].to_i}"
               end
 
             options << { label: label, value: bucket["key"], count: bucket['doc_count']}
