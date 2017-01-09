@@ -14,7 +14,8 @@ Spree::Product.class_eval do
       conversions: orders.complete.count,
       taxon_ids: taxon_and_ancestors.map(&:id),
       taxon_names: taxon_and_ancestors.map(&:name),
-      orders_count: orders.where('completed_at > ?', 3.months.ago).count
+      orders_count: orders.where('completed_at > ?', 3.months.ago).count,
+      subscribable: subscribable
     }
 
     json.merge!(brand: brand.name) if brand
