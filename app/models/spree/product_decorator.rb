@@ -17,7 +17,7 @@ Spree::Product.class_eval do
       taxon_names: taxon_and_ancestors.map(&:name),
       orders_count: orders.where('completed_at > ?', 3.months.ago).count,
       subscribable: subscribable,
-      list_position: list_position
+      list_position: index_list_position
     }
 
     json.merge!(brand: brand.name) if brand
@@ -33,11 +33,12 @@ Spree::Product.class_eval do
     json
   end
 
-  def list_position
-    primary_classification = classifications.where(taxon_id: primary_taxon_id).first
-    return primary_classification.position if primary_classification
-
-    (classifications.map(&:position) | [999]).min
+  def index_list_position
+    if self.respond_to? :list_position
+      list_position
+    else
+      0
+    end
   end
 
   def taxon_by_taxonomy(taxonomy_id)
