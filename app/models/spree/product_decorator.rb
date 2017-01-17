@@ -1,7 +1,8 @@
 Spree::Product.class_eval do
-  searchkick word_start: [:name, :brand]
+  searchkick word_start: [:name, :brand], callbacks: false
 
   def search_data
+
     json = {
       id: id,
       name: name,
@@ -15,7 +16,8 @@ Spree::Product.class_eval do
       taxon_ids: taxon_and_ancestors.map(&:id),
       taxon_names: taxon_and_ancestors.map(&:name),
       orders_count: orders.where('completed_at > ?', 3.months.ago).count,
-      subscribable: subscribable
+      subscribable: subscribable,
+      list_position: list_position
     }
 
     json.merge!(brand: brand.name) if brand
@@ -29,6 +31,13 @@ Spree::Product.class_eval do
     end
 
     json
+  end
+
+  def list_position
+    primary_classification = classifications.where(taxon_id: primary_taxon_id).first
+    return primary_classification.position if primary_classification
+
+    (classifications.map(&:position) | [999]).min
   end
 
   def taxon_by_taxonomy(taxonomy_id)
