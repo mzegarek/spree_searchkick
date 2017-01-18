@@ -12,22 +12,26 @@ module Spree
       end
 
       def self.current_sort(params)
-        if params[:sort]
-          found_sort = applicable_sorts[params[:sort]]
-          if found_sort
-            return found_sort[:label]
-          end
-        end
-        'Featured'
+        sort = active_sort(params)
+        sort[:label]
       end
 
       def self.process_sorts(params)
-        if params[:sort]
-          valid_sorts = applicable_sorts
-          found_sort = valid_sorts[params[:sort]]
-          return found_sort[:sort] if found_sort
+        sort = active_sort(params)
+        sort[:sort]
+      end
+
+      def self.active_sort(params)
+        found_sort = applicable_sorts[params[:sort]] if params[:sort]
+        found_sort ||= applicable_sorts[default_sort_key(params)]
+      end
+
+      def self.default_sort_key(params)
+        if params[:keywords].blank?
+          'featured'
+        else
+          'relevance'
         end
-        { list_position: :asc }
       end
     end
   end
