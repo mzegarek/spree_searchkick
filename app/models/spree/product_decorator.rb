@@ -1,5 +1,5 @@
 Spree::Product.class_eval do
-  searchkick word_start: [:name, :brand], callbacks: false
+  searchkick word_start: [:name, :brand, :description], callbacks: :async
 
   def search_data
 

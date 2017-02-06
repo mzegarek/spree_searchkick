@@ -7,7 +7,8 @@ module Spree
           'relevance' => { sort: { _score: :desc }, label: "Relevance" },
           'popularity' => { sort: { conversions: :desc }, label: 'Popularity' },
           'price_asc' => { sort: { price: :asc }, label: "Price Low to High" },
-          'price_desc' => { sort: { price: :desc }, label: "Price High to Low" }
+          'price_desc' => { sort: { price: :desc }, label: "Price High to Low" },
+          'newest' => { sort: { created_at: :desc }, label: "Newest" }
         }
       end
 
