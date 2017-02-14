@@ -77,7 +77,7 @@ module Spree::Search
 
     def prepare(params)
       super
-      @sort = Spree::Core::SearchkickSorts.process_sorts(params)
+      @sort = Spree::Core::SearchkickSorts.process_sorts(params, taxon)
     end
 
     def process_price(price_list)
