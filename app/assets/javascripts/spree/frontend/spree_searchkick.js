@@ -6,8 +6,6 @@ $(function () {
   var products = new Bloodhound({
     datumTokenizer: Bloodhound.tokenizers.whitespace,
     queryTokenizer: Bloodhound.tokenizers.whitespace,
-    limit: 10,
-    prefetch: Spree.pathFor('autocomplete/products.json'),
     remote: {
       url: Spree.pathFor('autocomplete/products.json?keywords=%QUERY'),
       wildcard: '%QUERY'
