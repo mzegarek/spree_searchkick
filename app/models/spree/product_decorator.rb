@@ -64,6 +64,7 @@ Spree::Product.class_eval do
         fields: ["name^5", "brand"],
         where: search_where,
         load: false,
+        limit: 5000
       ).map { |p| { value: p.name, brand: p.brand } }
     end
   end
