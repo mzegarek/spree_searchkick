@@ -1,5 +1,5 @@
 Spree::Product.class_eval do
-  searchkick word_start: [:name, :brand, :description], callbacks: :async
+  searchkick word_start: [:name_and_brand, :description], callbacks: :async
 
   def search_data
 
@@ -20,7 +20,11 @@ Spree::Product.class_eval do
       list_position: index_list_position
     }
 
-    json.merge!(brand: brand.name) if brand
+    if brand
+      json.merge!(brand: brand.name, name_and_brand: [brand.name, name].join(" "))
+    else
+      json.merge!(name_and_brand: name)
+    end
 
     Spree::Property.all.each do |prop|
       json.merge!(Hash[prop.name.downcase, property(prop.name)])
@@ -50,22 +54,23 @@ Spree::Product.class_eval do
       Spree::Product.search(
         keywords,
         {
-          fields: ["name^5", "brand"],
+          fields: ["name_and_brand"],
           match: :word_start,
           limit: 10,
           load: false,
+          boost_by: { orders_count: { factor: 1 } },
           misspellings: { below: 5 },
           where: search_where
         }
-      ).map { |p| { value: p.name, brand: p.brand } }.uniq
+      ).map { |p| { id: p.id, value: p.name, brand: p.brand, type: 'item' } }.uniq
     else
       Spree::Product.search(
         '*',
-        fields: ["name^5", "brand"],
+        fields: ["name_and_brand"],
         where: search_where,
         load: false,
         limit: 5000
-      ).map { |p| { value: p.name, brand: p.brand } }
+      ).map { |p| { id: p.id, value: p.name, brand: p.brand } }
     end
   end
 
