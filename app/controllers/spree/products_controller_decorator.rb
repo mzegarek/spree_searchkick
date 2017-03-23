@@ -13,7 +13,6 @@ Spree::ProductsController.class_eval do
     keywords = params[:keywords] ||= nil
 
     json = autocomplete_taxons(keywords)
-    json += autocomplete_brands(keywords)
     json += Spree::Product.autocomplete(keywords)
 
     render json: json
