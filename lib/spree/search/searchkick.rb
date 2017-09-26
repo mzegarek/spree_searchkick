@@ -9,7 +9,7 @@ module Spree::Search
       Spree::Product.search(keyword_query,
         where: where_query,
         aggs: aggregations,
-        fields: ["name^5", "brand^3", "description"],
+        fields: ["name_and_brand^5", "name^4", "brand^2", "description"],
         match: :word_start,
         includes: search_includes,
         smart_aggs: true,
